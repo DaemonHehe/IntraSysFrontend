@@ -1,8 +1,15 @@
 // ChangePasswordPage.js
 import React from "react";
+import Sidebar from "./Sidebar";
 
 function ChangePasswordPage() {
-  return <div>Change Password Page Content</div>;
+  return (
+    <div className="h-screen w-full">
+      <div>
+        <Sidebar />
+      </div>
+    </div>
+  );
 }
 
 export default ChangePasswordPage;
