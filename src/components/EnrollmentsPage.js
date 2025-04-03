@@ -1,99 +1,55 @@
-// EnrollmentsPage.js
 import React, { useState } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, Plus } from "lucide-react";
 import clsx from "clsx";
 import Sidebar from "./Sidebar";
 
 function EnrollmentsPage() {
-  const courses = [
-    {
-      id: 1,
-      code: "CSC490",
-      name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-      section: "141",
-      instructor: "Aj Sumana_ks",
-      room: "Room: 5-335",
-      time: "Monday\n09:00-11:50",
-    },
-    {
-      id: 2,
-      code: "CSC490",
-      name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-      section: "141",
-      instructor: "Aj Sumana_ks",
-      room: "Room: 5-335",
-      time: "Monday\n09:00-11:50",
-    },
-    {
-      id: 3,
-      code: "CSC490",
-      name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-      section: "141",
-      instructor: "Aj Sumana_ks",
-      room: "Room: 5-335",
-      time: "Monday\n09:00-11:50",
-    },
-    {
-      id: 4,
-      code: "CSC490",
-      name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-      section: "141",
-      instructor: "Aj Sumana_ks",
-      room: "Room: 5-335",
-      time: "Monday\n09:00-11:50",
-    },
-    {
-      id: 5,
-      code: "CSC490",
-      name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-      section: "141",
-      instructor: "Aj Sumana_ks",
-      room: "Room: 5-335",
-      time: "Monday\n09:00-11:50",
-    },
-    {
-      id: 6,
-      code: "CSC490",
-      name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-      section: "141",
-      instructor: "Aj Sumana_ks",
-      room: "Room: 5-335",
-      time: "Monday\n09:00-11:50",
-    },
-    {
-      id: 7,
-      code: "CSC490",
-      name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-      section: "141",
-      instructor: "Aj Sumana_ks",
-      room: "Room: 5-335",
-      time: "Monday\n09:00-11:50",
-    },
-  ];
-
   const [searchQuery, setSearchQuery] = useState("");
-  const [courseList, setCourseList] = useState(courses);
+  const [courseList, setCourseList] = useState([]);
+  const [newCourse, setNewCourse] = useState({
+    code: "",
+    name: "",
+    section: "",
+    instructor: "",
+    room: "",
+    time: "",
+  });
+
+  const filteredCourses = courseList.filter(
+    (course) =>
+      course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructor.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleDelete = (courseId) => {
-    setCourseList(
-      (prevCourses) =>
-        prevCourses
-          .filter((course) => course.id !== courseId)
-          .map((course, index) => ({ ...course, id: index + 1 })) // Reset index order
+    setCourseList((prevCourses) =>
+      prevCourses.filter((course) => course.id !== courseId)
     );
   };
 
+  const handleAddCourse = () => {
+    if (!newCourse.code || !newCourse.name || !newCourse.section) return; // Prevent empty fields
+    setCourseList((prev) => [...prev, { id: prev.length + 1, ...newCourse }]);
+    setNewCourse({
+      code: "",
+      name: "",
+      section: "",
+      instructor: "",
+      room: "",
+      time: "",
+    });
+  };
+
   return (
-    <div className="flex min-h-screen bg-[#1E1E1E] text-white">
-      {/* Sidebar */}
+    <div className="flex h-screen bg-[#1E1E1E] text-white select-none">
       <Sidebar />
 
-      {/* Main Content */}
       <div className="flex-1 p-8">
         <div className="max-w-[1234px] mx-auto">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-semibold mb-1">Enrollments</h1>
+              <h1 className="text-3xl font-semibold mb-1">Enrollments</h1>
               <p className="text-gray-400 text-sm">Summer Semester 2025</p>
             </div>
             <div className="relative">
@@ -104,19 +60,95 @@ function EnrollmentsPage() {
               <input
                 type="text"
                 placeholder="Search Course"
-                className="bg-[#2D2D2D] pl-10 pr-4 py-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-500 w-[200px]"
+                className="bg-[#2D2D2D] pl-10 pr-4 py-2 rounded-3xl text-sm focus:outline-none focus:ring-1 focus:ring-gray-500 w-[400px]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                >
+                  <X size={18} />
+                </button>
+              )}
             </div>
           </div>
 
+          {/* Add Course Form */}
+          <div className="mb-6 p-4 bg-[#2D2D2D] rounded-lg">
+            <h2 className="text-lg font-semibold mb-3">Add Course</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <input
+                type="text"
+                placeholder="Course Code"
+                className="bg-[#363636] text-white px-3 py-2 rounded-md text-sm focus:outline-none"
+                value={newCourse.code}
+                onChange={(e) =>
+                  setNewCourse({ ...newCourse, code: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="Course Name"
+                className="bg-[#363636] text-white px-3 py-2 rounded-md text-sm focus:outline-none"
+                value={newCourse.name}
+                onChange={(e) =>
+                  setNewCourse({ ...newCourse, name: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="Section"
+                className="bg-[#363636] text-white px-3 py-2 rounded-md text-sm focus:outline-none"
+                value={newCourse.section}
+                onChange={(e) =>
+                  setNewCourse({ ...newCourse, section: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="Instructor"
+                className="bg-[#363636] text-white px-3 py-2 rounded-md text-sm focus:outline-none"
+                value={newCourse.instructor}
+                onChange={(e) =>
+                  setNewCourse({ ...newCourse, instructor: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="Room"
+                className="bg-[#363636] text-white px-3 py-2 rounded-md text-sm focus:outline-none"
+                value={newCourse.room}
+                onChange={(e) =>
+                  setNewCourse({ ...newCourse, room: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="Time (e.g., Monday 09:00-11:50)"
+                className="bg-[#363636] text-white px-3 py-2 rounded-md text-sm focus:outline-none"
+                value={newCourse.time}
+                onChange={(e) =>
+                  setNewCourse({ ...newCourse, time: e.target.value })
+                }
+              />
+            </div>
+            <button
+              onClick={handleAddCourse}
+              className="mt-3 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-md flex items-center"
+            >
+              <Plus size={18} className="mr-1" /> Add Course
+            </button>
+          </div>
+
+          {/* Table */}
           <div className="bg-[#2D2D2D] rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-[#1E472A] text-left text-sm">
-                    <th className="py-2 px-4 font-medium">Option</th>
+                    <th className="py-2 px-4 font-medium">ID</th>
                     <th className="py-2 px-4 font-medium">Course</th>
                     <th className="py-2 px-4 font-medium">Session</th>
                     <th className="py-2 px-4 font-medium">Instructor</th>
@@ -126,7 +158,7 @@ function EnrollmentsPage() {
                   </tr>
                 </thead>
                 <tbody className="text-sm">
-                  {courseList.map((course) => (
+                  {filteredCourses.map((course) => (
                     <tr
                       key={course.id}
                       className={clsx(

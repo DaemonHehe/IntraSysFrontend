@@ -6,6 +6,7 @@ import {
   FileText,
   Lock,
   LogOut,
+  User,
 } from "lucide-react";
 
 function Sidebar() {
@@ -21,11 +22,12 @@ function Sidebar() {
       {/* User Profile */}
       <div className="p-4 flex items-center space-x-3 border-b border-gray-800">
         <div className="w-12 h-12 rounded-full bg-[#14ae5c] flex items-center justify-center overflow-hidden">
-          <img
+          {/* <img
             src="/placeholder.svg?height=48&width=48"
             alt="Profile"
             className="w-full h-full object-cover"
-          />
+          /> */}
+          <User size={24} color="#fff" />
         </div>
         <div>
           <h3 className="font-medium">Miso soup</h3>
@@ -40,7 +42,7 @@ function Sidebar() {
             {
               name: "Dashboard",
               icon: <LayoutDashboard size={20} />,
-              path: "/",
+              path: "/main/dashboard",
             },
             {
               name: "Enrollments",

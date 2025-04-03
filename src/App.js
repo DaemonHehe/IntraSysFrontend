@@ -20,7 +20,7 @@ function App() {
         <Route
           path="/"
           element={
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+            <div className="min-h-screen bg-black text-white flex items-center justify-center select-none">
               <div className="container flex flex-col md:flex-row items-center justify-center gap-12 py-16 px-6 max-w-7xl">
                 {/* Left Section */}
                 <div className="flex flex-col max-w-md space-y-8 mb-12 md:mb-0">
