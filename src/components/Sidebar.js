@@ -4,7 +4,7 @@ import {
   LayoutDashboard,
   GraduationCap,
   FileText,
-  SquareAsterisk,
+  Lock,
   LogOut,
 } from "lucide-react";
 
@@ -54,7 +54,7 @@ function Sidebar() {
             },
             {
               name: "Change Password",
-              icon: <SquareAsterisk size={20} />,
+              icon: <Lock size={20} />,
               path: "/main/changepassword",
             },
           ].map(({ name, icon, path }) => (
