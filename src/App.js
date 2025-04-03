@@ -5,6 +5,9 @@ import { LinkIcon } from "lucide-react";
 import Calendar from "./components/Calendar";
 import LoginPage from "./components/LoginPage";
 import DashboardPage from "./components/DashboardPage";
+import EnrollmentsPage from "./components/EnrollmentsPage";
+import RecordsPage from "./components/RecordsPage";
+import ChangePasswordPage from "./components/ChangePasswordPage"; // Importing the components for routing
 import "./App.css";
 
 function App() {
@@ -59,6 +62,9 @@ function App() {
         {/* Define route for LoginPage */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/main/dashboard" element={<DashboardPage />} />
+        <Route path="/main/enrollments" element={<EnrollmentsPage />} />
+        <Route path="/main/records" element={<RecordsPage />} />
+        <Route path="/main/changepassword" element={<ChangePasswordPage />} />
       </Routes>
     </Router>
   );
