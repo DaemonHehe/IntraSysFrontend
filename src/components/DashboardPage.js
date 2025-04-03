@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   GraduationCap,
@@ -13,9 +14,35 @@ import {
 
 function DashboardPage() {
   const [activeNav, setActiveNav] = useState("dashboard");
+  const navigate = useNavigate(); //Initialize the useNavigate hook
+
+  const handleLogout = () => {
+    // Perform logout logic here (e.g., clear tokens, redirect to login page)
+    navigate("/"); // Redirect to the login page
+  };
+
+  const renderContent = () => {
+    switch (activeNav) {
+      case "dashboard":
+        return (
+          // Your existing dashboard content
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* ... (Your card components) */}
+          </div>
+        );
+      case "enrollments":
+        return <div>Enrollments Content</div>; // Placeholder for enrollments
+      case "records":
+        return <div>Academic Records Content</div>; // Placeholder for records
+      case "changepassword":
+        return <div>Change Password Content</div>; //Placeholder for Change Password
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-black text-white flex">
+    <div className="min-h-screen bg-black text-white flex select-none">
       {/* Sidebar */}
       <div className="w-64 bg-[#111] flex flex-col">
         {/* User Profile */}
@@ -78,14 +105,14 @@ function DashboardPage() {
             <li>
               <button
                 className={`w-full flex items-center space-x-3 px-6 py-3 ${
-                  activeNav === "instructors"
+                  activeNav === "changepassword"
                     ? "text-[#14ae5c] bg-black/20"
                     : "text-gray-300"
                 }`}
-                onClick={() => setActiveNav("instructors")}
+                onClick={() => setActiveNav("changepassword")}
               >
                 <Users size={20} />
-                <span>Instructors</span>
+                <span>Change Password</span>
               </button>
             </li>
           </ul>
@@ -93,7 +120,10 @@ function DashboardPage() {
 
         {/* Logout */}
         <div className="p-4 border-t border-gray-800">
-          <button className="flex items-center space-x-2 text-gray-400 hover:text-white">
+          <button
+            className="flex items-center space-x-2 text-gray-400 hover:text-white"
+            onClick={handleLogout}
+          >
             <span>Log Out</span>
             <LogOut size={16} />
           </button>
