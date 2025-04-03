@@ -75,7 +75,12 @@ function EnrollmentsPage() {
   const [courseList, setCourseList] = useState(courses);
 
   const handleDelete = (courseId) => {
-    setCourseList(courseList.filter((course) => course.id !== courseId));
+    setCourseList(
+      (prevCourses) =>
+        prevCourses
+          .filter((course) => course.id !== courseId)
+          .map((course, index) => ({ ...course, id: index + 1 })) // Reset index order
+    );
   };
 
   return (
