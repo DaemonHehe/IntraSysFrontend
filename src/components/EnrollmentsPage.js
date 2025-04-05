@@ -1,60 +1,59 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Search, X } from "lucide-react";
 import clsx from "clsx";
 import Sidebar from "./Sidebar";
 
-// Mock data for available courses
 const AVAILABLE_COURSES = [
   {
     code: "CS101",
     name: "Introduction to Computer Science",
     description: "Fundamental concepts of programming and computer science",
     sections: [
-      { 
-        id: "A", 
-        instructor: "Dr. John Smith", 
-        room: "SCI-201", 
-        time: "Monday 09:00-11:50" 
+      {
+        id: "A",
+        instructor: "Dr. John Smith",
+        room: "6-201",
+        time: "Monday 09:00-11:50",
       },
-      { 
-        id: "B", 
-        instructor: "Dr. Jane Doe", 
-        room: "SCI-202", 
-        time: "Tuesday 14:00-16:50" 
+      {
+        id: "B",
+        instructor: "Dr. Jane Doe",
+        room: "6-202",
+        time: "Tuesday 14:00-16:50",
       },
-    ]
+    ],
   },
   {
     code: "MATH202",
     name: "Calculus II",
     description: "Advanced integration techniques and applications",
     sections: [
-      { 
-        id: "A", 
-        instructor: "Dr. Robert Johnson", 
-        room: "MATH-101", 
-        time: "Wednesday 10:00-12:50" 
+      {
+        id: "A",
+        instructor: "Dr. Robert Johnson",
+        room: "1-101",
+        time: "Wednesday 10:00-12:50",
       },
-      { 
-        id: "B", 
-        instructor: "Dr. Lisa Chen", 
-        room: "MATH-102", 
-        time: "Thursday 13:00-15:50" 
+      {
+        id: "B",
+        instructor: "Dr. Lisa Chen",
+        room: "1-102",
+        time: "Thursday 13:00-15:50",
       },
-    ]
+    ],
   },
   {
     code: "ENG105",
     name: "English Composition",
     description: "Developing writing skills for academic purposes",
     sections: [
-      { 
-        id: "A", 
-        instructor: "Prof. Michael Brown", 
-        room: "HUM-301", 
-        time: "Friday 09:00-11:50" 
+      {
+        id: "A",
+        instructor: "Prof. Michael Brown",
+        room: "4-301",
+        time: "Friday 09:00-11:50",
       },
-    ]
+    ],
   },
 ];
 
@@ -64,8 +63,8 @@ function EnrollmentsPage() {
   const [showModal, setShowModal] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
-  
-  // Filter enrolled courses based on search query
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const filteredCourses = enrolledCourses.filter(
     (course) =>
       course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,41 +72,33 @@ function EnrollmentsPage() {
       course.instructor.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    
     if (!searchQuery.trim()) return;
-    
+
     const foundCourse = AVAILABLE_COURSES.find(
-      course => course.code.toLowerCase() === searchQuery.toLowerCase()
+      (course) => course.code.toLowerCase() === searchQuery.toLowerCase()
     );
-    
+
     setSearchResults(foundCourse || "not-found");
-    setSelectedSection(null); // Reset selected section
-    
-    // Only show the modal if it's not already shown
-    if (!showModal) {
-      setShowModal(true);
-    }
+    setSelectedSection(null);
+    if (!showModal) setShowModal(true);
   };
 
-  // Handle course enrollment
   const handleEnroll = () => {
-    if (!selectedSection || !searchResults || searchResults === "not-found") return;
-    
-    // Check if the user is already enrolled in any section of this course
+    if (!selectedSection || !searchResults || searchResults === "not-found")
+      return;
+
     const isAlreadyEnrolled = enrolledCourses.some(
-      course => course.code === searchResults.code
+      (course) => course.code === searchResults.code
     );
-    
+
     if (isAlreadyEnrolled) {
-      alert(`You are already enrolled in a section of ${searchResults.code}. You cannot enroll in multiple sections of the same course.`);
+      alert(`You are already enrolled in a section of ${searchResults.code}.`);
       return;
     }
-    
+
     const newEnrollment = {
-      id: enrolledCourses.length + 1,
       code: searchResults.code,
       name: searchResults.name,
       section: selectedSection.id,
@@ -115,12 +106,19 @@ function EnrollmentsPage() {
       room: selectedSection.room,
       time: selectedSection.time,
     };
-    
-    setEnrolledCourses(prev => [...prev, newEnrollment]);
-    
-    // Ask if user wants to search for another course
-    const searchAnother = window.confirm("Course enrolled successfully! Would you like to search for another course?");
-    
+
+    const updatedCourses = [...enrolledCourses, newEnrollment].map(
+      (course, index) => ({
+        ...course,
+        id: index + 1,
+      })
+    );
+
+    setEnrolledCourses(updatedCourses);
+
+    const searchAnother = window.confirm(
+      "Course enrolled! Search for another?"
+    );
     if (searchAnother) {
       setSearchQuery("");
       setSearchResults(null);
@@ -130,19 +128,24 @@ function EnrollmentsPage() {
     }
   };
 
-  // Handle deletion of enrolled course
-  const handleDelete = (courseId) => {
-    setEnrolledCourses((prevCourses) =>
-      prevCourses.filter((course) => course.id !== courseId)
-    );
+  const handleProceed = () => {
+    if (enrolledCourses.length > 0) {
+      setShowSuccessModal(true);
+    }
   };
 
-  // Close modal
+  const handleDelete = (courseId) => {
+    const updatedCourses = enrolledCourses
+      .filter((course) => course.id !== courseId)
+      .map((course, index) => ({ ...course, id: index + 1 }));
+    setEnrolledCourses(updatedCourses);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setSearchResults(null);
     setSelectedSection(null);
-    setSearchQuery(""); // Clear search query when closing modal
+    setSearchQuery("");
   };
 
   return (
@@ -208,10 +211,8 @@ function EnrollmentsPage() {
                       >
                         <td className="py-3 px-4">{course.id}</td>
                         <td className="py-3 px-4">
-                          <div>
-                            <span className="font-medium">{course.code}:</span>
-                            <span className="ml-1">{course.name}</span>
-                          </div>
+                          <span className="font-medium">{course.code}:</span>{" "}
+                          {course.name}
                         </td>
                         <td className="py-3 px-4">{course.section}</td>
                         <td className="py-3 px-4">{course.instructor}</td>
@@ -231,7 +232,10 @@ function EnrollmentsPage() {
                     ))
                   ) : (
                     <tr className="border-b border-gray-700 bg-[#2D2D2D]">
-                      <td colSpan="7" className="py-8 text-center text-gray-400">
+                      <td
+                        colSpan="7"
+                        className="py-8 text-center text-gray-400"
+                      >
                         No courses enrolled. Search for courses to enroll.
                       </td>
                     </tr>
@@ -239,11 +243,13 @@ function EnrollmentsPage() {
                 </tbody>
               </table>
             </div>
-
             <div className="p-4 flex justify-end bg-[#2D2D2D]">
-              <button 
+              <button
+                onClick={handleProceed}
                 className={`bg-[#4A4A4A] text-white px-6 py-1.5 rounded text-sm transition-colors ${
-                  enrolledCourses.length > 0 ? "hover:bg-[#5A5A5A]" : "opacity-50 cursor-not-allowed"
+                  enrolledCourses.length > 0
+                    ? "hover:bg-[#5A5A5A]"
+                    : "opacity-50 cursor-not-allowed"
                 }`}
                 disabled={enrolledCourses.length === 0}
               >
@@ -257,15 +263,18 @@ function EnrollmentsPage() {
       {/* Course Search Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="bg-[#2D2D2D] rounded-lg p-6 max-w-2xl w-full mx-4">
+          <div className="bg-[#2D2D2D] rounded-xl p-6 max-w-2xl w-full mx-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Course Search</h2>
-              <button onClick={handleCloseModal} className="text-gray-400 hover:text-white">
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-white"
+              >
                 <X size={24} />
               </button>
             </div>
-            
-            {/* Modal Search Box */}
+
+            {/* Modal Content */}
             <div className="mb-6">
               <form onSubmit={handleSearch} className="relative">
                 <Search
@@ -297,79 +306,118 @@ function EnrollmentsPage() {
               <div className="text-center py-8">
                 <p className="text-red-400 mb-2">Course Unavailable</p>
                 <p className="text-gray-400">
-                  No course found with code "{searchQuery}". Please check the course code and try again.
+                  No course found with code "{searchQuery}". Please check and
+                  try again.
                 </p>
               </div>
-            ) : searchResults && (
-              <div>
-                <div className="bg-[#363636] p-4 rounded-md mb-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg">{searchResults.code}: {searchResults.name}</h3>
-                      <p className="text-gray-400 mt-1">{searchResults.description}</p>
-                      {enrolledCourses.some(course => course.code === searchResults.code) && (
-                        <p className="text-yellow-400 mt-2">
-                          You are already enrolled in a section of this course.
-                        </p>
-                      )}
-                    </div>
+            ) : (
+              searchResults && (
+                <div>
+                  <div className="bg-[#363636] p-4 rounded-md mb-4">
+                    <h3 className="font-semibold text-lg">
+                      {searchResults.code}: {searchResults.name}
+                    </h3>
+                    <p className="text-gray-400 mt-1">
+                      {searchResults.description}
+                    </p>
+                    {enrolledCourses.some(
+                      (c) => c.code === searchResults.code
+                    ) && (
+                      <p className="text-yellow-400 mt-2">
+                        You are already enrolled in this course.
+                      </p>
+                    )}
+                  </div>
+
+                  <h3 className="font-medium mb-2">Available Sections:</h3>
+                  <div className="bg-[#363636] rounded-md overflow-hidden mb-4">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-[#1E472A] text-left text-sm">
+                          <th className="py-2 px-4 font-medium">Select</th>
+                          <th className="py-2 px-4 font-medium">Section</th>
+                          <th className="py-2 px-4 font-medium">Instructor</th>
+                          <th className="py-2 px-4 font-medium">Room</th>
+                          <th className="py-2 px-4 font-medium">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-sm">
+                        {searchResults.sections.map((section, index) => (
+                          <tr
+                            key={section.id}
+                            className={clsx(
+                              "border-b border-gray-700",
+                              index % 2 === 0 ? "bg-[#363636]" : "bg-[#2D2D2D]"
+                            )}
+                          >
+                            <td className="py-3 px-4">
+                              <input
+                                type="checkbox"
+                                checked={selectedSection?.id === section.id}
+                                onChange={() =>
+                                  setSelectedSection(
+                                    selectedSection?.id === section.id
+                                      ? null
+                                      : section
+                                  )
+                                }
+                                className="h-4 w-4"
+                              />
+                            </td>
+                            <td className="py-3 px-4">{section.id}</td>
+                            <td className="py-3 px-4">{section.instructor}</td>
+                            <td className="py-3 px-4">{section.room}</td>
+                            <td className="py-3 px-4">{section.time}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleEnroll}
+                      disabled={
+                        !selectedSection ||
+                        enrolledCourses.some(
+                          (course) => course.code === searchResults.code
+                        )
+                      }
+                      className={`bg-green-600 text-white px-6 py-2 rounded-md ${
+                        selectedSection &&
+                        !enrolledCourses.some(
+                          (course) => course.code === searchResults.code
+                        )
+                          ? "hover:bg-green-500"
+                          : "opacity-50 cursor-not-allowed"
+                      }`}
+                    >
+                      Enroll
+                    </button>
                   </div>
                 </div>
-                
-                <h3 className="font-medium mb-2">Available Sections:</h3>
-                <div className="bg-[#363636] rounded-md overflow-hidden mb-4">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-[#1E472A] text-left text-sm">
-                        <th className="py-2 px-4 font-medium">Select</th>
-                        <th className="py-2 px-4 font-medium">Section</th>
-                        <th className="py-2 px-4 font-medium">Instructor</th>
-                        <th className="py-2 px-4 font-medium">Room</th>
-                        <th className="py-2 px-4 font-medium">Time</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-sm">
-                      {searchResults.sections.map((section, index) => (
-                        <tr 
-                          key={section.id}
-                          className={clsx(
-                            "border-b border-gray-700",
-                            index % 2 === 0 ? "bg-[#363636]" : "bg-[#2D2D2D]"
-                          )}
-                        >
-                          <td className="py-3 px-4">
-                            <input 
-                              type="checkbox" 
-                              checked={selectedSection && selectedSection.id === section.id}
-                              onChange={() => setSelectedSection(selectedSection && selectedSection.id === section.id ? null : section)}
-                              className="h-4 w-4"
-                            />
-                          </td>
-                          <td className="py-3 px-4">{section.id}</td>
-                          <td className="py-3 px-4">{section.instructor}</td>
-                          <td className="py-3 px-4">{section.room}</td>
-                          <td className="py-3 px-4">{section.time}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleEnroll}
-                    disabled={!selectedSection || enrolledCourses.some(course => course.code === searchResults.code)}
-                    className={`bg-green-600 text-white px-6 py-2 rounded-md ${
-                      selectedSection && !enrolledCourses.some(course => course.code === searchResults.code) 
-                        ? "hover:bg-green-500" 
-                        : "opacity-50 cursor-not-allowed"
-                    }`}
-                  >
-                    Enroll
-                  </button>
-                </div>
-              </div>
+              )
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-[#2D2D2D] rounded-xl p-6 max-w-md w-full mx-4 text-center">
+            <h2 className="text-xl font-semibold mb-4">
+              Enrollment Successful!
+            </h2>
+            <p className="text-gray-400 mb-6">
+              You have successfully enrolled in the selected courses.
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
