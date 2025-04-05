@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -11,10 +11,47 @@ import {
 
 function Sidebar() {
   const [activeNav, setActiveNav] = useState("dashboard");
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Get the token from local storage
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          "https://intrasysmiso.onrender.com/users/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+
+        // check if data is an array and get the first item
+        setUserData(Array.isArray(data) && data.length > 0 ? data[0] : null);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // Handle error (e.g., redirect to login page)
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated"); // Clear authentication status from local storage
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("token");
     navigate("/");
   };
 
@@ -31,8 +68,18 @@ function Sidebar() {
           <User size={24} color="#fff" />
         </div>
         <div>
-          <h3 className="font-medium">Miso soup</h3>
-          <p className="text-xs text-gray-400">misosoup65@rsu.ac.th</p>
+          {loading ? (
+            <p className="text-sm text-gray-400">Loading...</p>
+          ) : userData ? (
+            <>
+              <h3 className="font-medium">{userData.name || "User"}</h3>
+              <p className="text-xs text-gray-400">
+                {userData.email || "No email"}
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-gray-400">Failed to load user data</p>
+          )}
         </div>
       </div>
 
