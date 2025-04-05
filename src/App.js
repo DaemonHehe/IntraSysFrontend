@@ -2,6 +2,7 @@
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Import React Router
 import { LinkIcon } from "lucide-react";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Calendar from "./components/Calendar";
 import LoginPage from "./components/LoginPage";
 import DashboardPage from "./components/DashboardPage";
@@ -61,10 +62,38 @@ function App() {
 
         {/* Define route for LoginPage */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/main/dashboard" element={<DashboardPage />} />
-        <Route path="/main/enrollments" element={<EnrollmentsPage />} />
-        <Route path="/main/records" element={<RecordsPage />} />
-        <Route path="/main/changepassword" element={<ChangePasswordPage />} />
+        <Route
+          path="/main/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/main/enrollments"
+          element={
+            <ProtectedRoute>
+              <EnrollmentsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/main/records"
+          element={
+            <ProtectedRoute>
+              <RecordsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/main/changepassword"
+          element={
+            <ProtectedRoute>
+              <ChangePasswordPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

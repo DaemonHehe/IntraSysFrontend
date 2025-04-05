@@ -14,6 +14,7 @@ function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated"); // Clear authentication status from local storage
     navigate("/");
   };
 

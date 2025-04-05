@@ -16,6 +16,7 @@ function LoginScreen() {
 
     // Check if credentials match
     if (username === "admin" && password === "admin") {
+      localStorage.setItem("isAuthenticated", "true"); // Set authentication status in local storage
       // Navigate to dashboard - using the correct path
       navigate("/main/dashboard");
     } else {
