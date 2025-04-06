@@ -5,23 +5,50 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function LoginScreen() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Clear any previous error
     setError("");
+    setIsLoading(true);
 
-    // Check if credentials match
-    if (username === "admin" && password === "admin") {
-      localStorage.setItem("isAuthenticated", "true"); // Set authentication status in local storage
-      // Navigate to dashboard - using the correct path
-      navigate("/main/dashboard");
-    } else {
-      // Show error message
-      setError("Invalid username or password");
+    try {
+      // Make API request to authenticate
+      const response = await fetch(
+        "https://intrasysmiso.onrender.com/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // If authentication is successful
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("token", data.token); // Store the JWT token
+        localStorage.setItem("user", JSON.stringify(data.user)); // Store user data if available
+        navigate("/main/dashboard");
+      } else {
+        // Show error message from API or default message
+        setError(data.message || "Invalid email or password");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Failed to connect to the server");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -46,15 +73,16 @@ function LoginScreen() {
 
           <div className="w-full space-y-4">
             <div className="space-y-2">
-              <label htmlFor="username" className="text-black">
-                Username
+              <label htmlFor="email" className="text-black">
+                Email
               </label>
               <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-[#3c4c3c] text-white rounded-lg p-3 focus:outline-none"
+                placeholder="Enter your email"
               />
             </div>
 
@@ -68,6 +96,7 @@ function LoginScreen() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-[#3c4c3c] text-white rounded-lg p-3 focus:outline-none"
+                placeholder="Enter your password"
               />
             </div>
 
@@ -80,10 +109,11 @@ function LoginScreen() {
 
             <div className="pt-4 flex justify-center">
               <button
-                className="bg-[#14AE5C] text-black px-8 py-2 rounded-full hover:bg-[#7aab8e] transition-colors"
+                className="bg-[#14AE5C] text-black px-8 py-2 rounded-full hover:bg-[#7aab8e] transition-colors disabled:opacity-50"
                 onClick={handleLogin}
+                disabled={isLoading || !email || !password}
               >
-                Log in
+                {isLoading ? "Logging in..." : "Log in"}
               </button>
             </div>
           </div>
