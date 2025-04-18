@@ -1,6 +1,6 @@
 "use client";
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Import React Router
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { LinkIcon } from "lucide-react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Calendar from "./components/Calendar";
@@ -8,16 +8,14 @@ import LoginPage from "./components/LoginPage";
 import SDashboardPage from "./components/SDashboardPage";
 import SEnrollmentsPage from "./components/SEnrollmentsPage";
 import SRecordsPage from "./components/SRecordsPage";
-import GradesPage from "./components/Grade";
-import ChangePasswordPage from "./components/ChangePasswordPage"; // Importing the components for routing
-import "./App.css";
+import GradingPage from "./components/Grade.js";
+import ChangePasswordPage from "./components/ChangePasswordPage";
 import LDashboardPage from "./components/LDashboardPage";
+import "./App.css";
 
 function App() {
   return (
     <Router>
-      {" "}
-      {/* Wrapping the app with Router for routing */}
       <Routes>
         {/* Define route for the home page */}
         <Route
@@ -45,7 +43,7 @@ function App() {
 
                   <div>
                     <a
-                      href="/login" // Linking to the login page route
+                      href="/login"
                       className="bg-[#14ae5c] text-white px-12 py-3 rounded-full font-medium hover:bg-[#009951] transition-colors"
                     >
                       Start
@@ -63,10 +61,12 @@ function App() {
         />
 
         <Route path="/login" element={<LoginPage />} />
+
+        {/* Student routes with student role requirement */}
         <Route
           path="/main/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="student">
               <SDashboardPage />
             </ProtectedRoute>
           }
@@ -74,7 +74,7 @@ function App() {
         <Route
           path="/main/enrollments"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="student">
               <SEnrollmentsPage />
             </ProtectedRoute>
           }
@@ -82,7 +82,7 @@ function App() {
         <Route
           path="/main/records"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="student">
               <SRecordsPage />
             </ProtectedRoute>
           }
@@ -90,16 +90,18 @@ function App() {
         <Route
           path="/main/changepassword"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="student">
               <ChangePasswordPage />
             </ProtectedRoute>
           }
         />
+
+        {/* Lecturer routes with lecturer role requirement */}
         <Route
           path="/lecturer/grades"
           element={
-            <ProtectedRoute>
-              <GradesPage />
+            <ProtectedRoute requiredRole="lecturer">
+              <GradingPage />
             </ProtectedRoute>
           }
         />
@@ -107,7 +109,7 @@ function App() {
         <Route
           path="/lecturer/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole="lecturer">
               <LDashboardPage />
             </ProtectedRoute>
           }
