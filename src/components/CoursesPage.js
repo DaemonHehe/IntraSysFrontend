@@ -15,6 +15,7 @@ export default function CoursesPage() {
     duration: "",
     enrollmentLimit: "",
     lecturer: "",
+    content: [{ title: "Introduction", url: "" }],
   });
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
