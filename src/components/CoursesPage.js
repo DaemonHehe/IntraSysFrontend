@@ -1,8 +1,5 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
-import clsx from "clsx";
 
 const API_URL = "https://intrasysmiso.onrender.com";
 
@@ -31,57 +28,15 @@ export default function CoursesPage() {
     try {
       setLoading(true);
       const res = await fetch(`${API_URL}/courses`);
+      const responseData = await res.json();
 
-      // First check if response is HTML
-      const responseText = await res.text();
-      if (
-        responseText.startsWith("<!DOCTYPE") ||
-        responseText.startsWith("<html")
-      ) {
-        throw new Error(`Server returned HTML page. Status: ${res.status}`);
-      }
-
-      // Parse JSON
-      let responseData;
-      try {
-        responseData = JSON.parse(responseText);
-      } catch (err) {
-        throw new Error(`Invalid JSON response: ${err.message}`);
-      }
-
-      // Handle both possible response formats
-      let coursesData = [];
       if (responseData.success && Array.isArray(responseData.data)) {
-        coursesData = responseData.data; // Standard format
-      } else if (Array.isArray(responseData)) {
-        coursesData = responseData; // Fallback to raw array
+        setCourses(responseData.data);
       } else {
-        throw new Error("Invalid data format received");
+        setError("Failed to fetch courses.");
       }
-
-      // Validate and normalize course data
-      const validatedCourses = coursesData
-        .filter((course) => course && course._id && course.name) // Basic validation
-        .map((course) => ({
-          _id: course._id?.toString(),
-          name: course.name || "Untitled Course",
-          description: course.description || "",
-          category: course.category || "",
-          duration: course.duration || 0,
-          enrollmentLimit: course.enrollmentLimit || 0,
-          lecturer: course.lecturer || null,
-          // Add other fields with defaults
-        }));
-
-      setCourses(validatedCourses);
-      setError(null);
     } catch (err) {
-      setError(`Failed to fetch courses: ${err.message}`);
-      setCourses([]);
-      console.error("Fetch error details:", {
-        error: err,
-        timestamp: new Date(),
-      });
+      setError("Failed to fetch courses: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -98,44 +53,13 @@ export default function CoursesPage() {
         method,
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
-        body: JSON.stringify({
-          ...form,
-          duration: Number(form.duration),
-          enrollmentLimit: Number(form.enrollmentLimit) || 0,
-          lecturer: String(form.lecturer),
-        }),
+        body: JSON.stringify(form),
       });
 
-      const responseText = await response.text();
-      if (
-        responseText.startsWith("<!DOCTYPE") ||
-        responseText.startsWith("<html")
-      ) {
-        throw new Error(
-          `Server returned HTML instead of JSON. Status: ${response.status}`
-        );
-      }
-
-      let responseData;
-      try {
-        responseData = JSON.parse(responseText);
-      } catch (err) {
-        throw new Error(
-          `Failed to parse response as JSON. Status: ${response.status}`
-        );
-      }
-
-      if (!response.ok) {
-        throw new Error(
-          responseData.error || responseData.message || "Request failed"
-        );
-      }
-
+      if (!response.ok) throw new Error("Failed to save course.");
       resetForm();
-      await fetchCourses();
-      setError(null);
+      fetchCourses();
     } catch (err) {
       setError("Failed to save course: " + err.message);
     }
@@ -149,6 +73,7 @@ export default function CoursesPage() {
       duration: "",
       enrollmentLimit: "",
       lecturer: "",
+      content: [{ title: "Introduction", url: "" }],
     });
     setEditingId(null);
     setShowForm(false);
@@ -159,9 +84,10 @@ export default function CoursesPage() {
       name: course.name,
       description: course.description,
       category: course.category,
-      duration: course.duration?.toString() || "",
-      enrollmentLimit: course.enrollmentLimit?.toString() || "",
-      lecturer: course.lecturer?._id || course.lecturer || "",
+      duration: course.duration.toString(),
+      enrollmentLimit: course.enrollmentLimit.toString(),
+      lecturer: course.lecturer?._id || course.lecturer,
+      content: course.content || [{ title: "Introduction", url: "" }],
     });
     setEditingId(course._id);
     setShowForm(true);
@@ -169,33 +95,31 @@ export default function CoursesPage() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`${API_URL}/courses/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      await fetchCourses();
-      setError(null);
+      const res = await fetch(`${API_URL}/courses/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete course.");
+      fetchCourses();
     } catch (err) {
       setError("Failed to delete course: " + err.message);
     }
   };
 
-  const filteredCourses = Array.isArray(courses)
-    ? courses.filter((course) => {
-        if (!course) return false;
-        return (
-          (course.name?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (course.category?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (course.description?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          )
-        );
-      })
-    : [];
+  const handleContentChange = (index, field, value) => {
+    const newContent = [...form.content];
+    newContent[index][field] = value;
+    setForm({ ...form, content: newContent });
+  };
+
+  const addContent = () => {
+    setForm({
+      ...form,
+      content: [...form.content, { title: "", url: "" }],
+    });
+  };
+
+  const removeContent = (index) => {
+    const newContent = form.content.filter((_, i) => i !== index);
+    setForm({ ...form, content: newContent });
+  };
 
   if (loading) {
     return (
@@ -339,6 +263,50 @@ export default function CoursesPage() {
                     required
                   />
                 </div>
+
+                {/* Content Section */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm text-gray-400 mb-1">
+                    Content
+                  </label>
+                  {form.content.map((content, index) => (
+                    <div key={index} className="flex gap-4 mb-4">
+                      <input
+                        className="bg-[#1E1E1E] border border-gray-600 rounded px-3 py-2 w-full"
+                        placeholder="Content Title"
+                        value={content.title}
+                        onChange={(e) =>
+                          handleContentChange(index, "title", e.target.value)
+                        }
+                        required
+                      />
+                      <input
+                        className="bg-[#1E1E1E] border border-gray-600 rounded px-3 py-2 w-full"
+                        placeholder="Content URL"
+                        value={content.url}
+                        onChange={(e) =>
+                          handleContentChange(index, "url", e.target.value)
+                        }
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeContent(index)}
+                        className="bg-red-600 text-white rounded px-3 py-2"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addContent}
+                    className="bg-green-600 text-white px-4 py-2 rounded"
+                  >
+                    Add Content
+                  </button>
+                </div>
+
                 <div className="md:col-span-2 flex justify-end gap-2">
                   <button
                     type="button"
@@ -359,6 +327,7 @@ export default function CoursesPage() {
           </div>
         )}
 
+        {/* Render courses */}
         <div className="bg-[#2D2D2D] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
@@ -368,70 +337,42 @@ export default function CoursesPage() {
                   <th className="py-2 px-4">Description</th>
                   <th className="py-2 px-4">Category</th>
                   <th className="py-2 px-4">Duration</th>
-                  <th className="py-2 px-4">Enrollment Limit</th>
-                  <th className="py-2 px-4">Lecturer</th>
+                  <th className="py-2 px-4">Enrollment</th>
                   <th className="py-2 px-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="text-sm">
-                {filteredCourses.length > 0 ? (
-                  filteredCourses.map((course, index) => (
-                    <tr
-                      key={course._id}
-                      className={clsx(
-                        "border-b border-gray-700",
-                        index % 2 === 0 ? "bg-[#363636]" : "bg-[#2D2D2D]"
-                      )}
-                    >
-                      <td className="py-3 px-4 text-yellow-400">
-                        {course.name}
-                      </td>
-                      <td className="py-3 px-4 text-gray-300">
-                        {course.description}
-                      </td>
-                      <td className="py-3 px-4">{course.category}</td>
-                      <td className="py-3 px-4">{course.duration} weeks</td>
-                      <td className="py-3 px-4">{course.enrollmentLimit}</td>
-                      <td className="py-3 px-4">
-                        {typeof course.lecturer === "object" ? (
-                          <>
-                            <div>{course.lecturer.name}</div>
-                            <div className="text-xs text-gray-400">
-                              {course.lecturer.email}
-                            </div>
-                          </>
-                        ) : (
-                          course.lecturer || "N/A"
-                        )}
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-2">
+              <tbody>
+                {courses
+                  .filter((course) =>
+                    course.name
+                      .toLowerCase()
+                      .includes(searchQuery.toLowerCase())
+                  )
+                  .map((course) => (
+                    <tr key={course._id} className="border-t border-gray-700">
+                      <td className="py-2 px-4">{course.name}</td>
+                      <td className="py-2 px-4">{course.description}</td>
+                      <td className="py-2 px-4">{course.category}</td>
+                      <td className="py-2 px-4">{course.duration}</td>
+                      <td className="py-2 px-4">{course.enrollmentLimit}</td>
+                      <td className="py-2 px-4">
+                        <div className="flex gap-2 justify-center">
                           <button
                             onClick={() => handleEdit(course)}
-                            className="text-blue-500 hover:text-blue-400"
+                            className="bg-yellow-500 text-white px-3 py-2 rounded-md text-xs"
                           >
-                            <Pencil size={18} />
+                            <Pencil size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(course._id)}
-                            className="text-red-500 hover:text-red-400"
+                            className="bg-red-600 text-white px-3 py-2 rounded-md text-xs"
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="7"
-                      className="py-4 px-4 text-center text-gray-400"
-                    >
-                      No courses found
-                    </td>
-                  </tr>
-                )}
+                  ))}
               </tbody>
             </table>
           </div>
