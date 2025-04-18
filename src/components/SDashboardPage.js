@@ -1,11 +1,11 @@
 "use client";
 
-import Sidebar from "./SSidebar"; // Importing the Sidebar component
+import SSidebar from "./SSidebar"; // Importing the Sidebar component
 import { ChevronLeft, ChevronRight } from "lucide-react"; // Importing icons from lucide-react
 function SDashboardPage() {
   return (
     <div className="min-h-screen bg-black text-white flex select-none">
-      <Sidebar /> {/* Sidebar component for navigation */}
+      <SSidebar /> {/* Sidebar component for navigation */}
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-8">

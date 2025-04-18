@@ -9,8 +9,9 @@ import SDashboardPage from "./components/SDashboardPage";
 import SEnrollmentsPage from "./components/SEnrollmentsPage";
 import SRecordsPage from "./components/SRecordsPage";
 import GradingPage from "./components/Grade.js";
-import ChangePasswordPage from "./components/ChangePasswordPage";
+import SChangePasswordPage from "./components/SChangePasswordPage.js";
 import LDashboardPage from "./components/LDashboardPage";
+import LChangePasswordPage from "./components/LChangePasswordPage.js";
 import "./App.css";
 
 function App() {
@@ -91,7 +92,7 @@ function App() {
           path="/main/changepassword"
           element={
             <ProtectedRoute requiredRole="student">
-              <ChangePasswordPage />
+              <SChangePasswordPage />
             </ProtectedRoute>
           }
         />
@@ -111,6 +112,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="lecturer">
               <LDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lecturer/changepassword"
+          element={
+            <ProtectedRoute requiredRole="lecturer">
+              <LChangePasswordPage />
             </ProtectedRoute>
           }
         />

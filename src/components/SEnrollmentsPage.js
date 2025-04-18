@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Search, X } from "lucide-react";
 import clsx from "clsx";
-import Sidebar from "./SSidebar";
+import SSidebar from "./SSidebar";
 
 const AVAILABLE_COURSES = [
   {
@@ -150,7 +150,7 @@ function SEnrollmentsPage() {
 
   return (
     <div className="flex h-screen bg-[#1E1E1E] text-white select-none">
-      <Sidebar />
+      <SSidebar />
 
       <div className="flex-1 p-8">
         <div className="max-w-[1234px] mx-auto">

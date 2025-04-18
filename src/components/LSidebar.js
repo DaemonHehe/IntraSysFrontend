@@ -9,11 +9,20 @@ import {
   User,
 } from "lucide-react";
 
-function Sidebar() {
+function LSidebar() {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Set active nav based on current path when component mounts
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.includes("dashboard")) setActiveNav("dashboard");
+    else if (path.includes("enrollments")) setActiveNav("enrollments");
+    else if (path.includes("grades")) setActiveNav("grades");
+    else if (path.includes("changepassword")) setActiveNav("change password");
+  }, []);
 
   // Fetch user data
   useEffect(() => {
@@ -50,9 +59,22 @@ function Sidebar() {
   }, []);
 
   const handleLogout = () => {
+    // Clear all authentication-related data
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("token");
+    localStorage.removeItem("lecturer");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    
+    // Navigate to home page
     navigate("/");
+  };
+
+  // Make sure the activeNav state is correctly updated when clicking navigation items
+  const handleNavClick = (name, path) => {
+    const navName = name.toLowerCase();
+    setActiveNav(navName);
+    navigate(path);
   };
 
   return (
@@ -60,11 +82,6 @@ function Sidebar() {
       {/* User Profile */}
       <div className="p-4 flex items-center space-x-3 border-b border-gray-800">
         <div className="w-12 h-12 rounded-full bg-[#14ae5c] flex items-center justify-center overflow-hidden">
-          {/* <img
-            src="/placeholder.svg?height=48&width=48"
-            alt="Profile"
-            className="w-full h-full object-cover"
-          /> */}
           <User size={24} color="#fff" />
         </div>
         <div>
@@ -90,22 +107,22 @@ function Sidebar() {
             {
               name: "Dashboard",
               icon: <LayoutDashboard size={20} />,
-              path: "/main/dashboard",
+              path: "/lecturer/dashboard",
             },
             {
               name: "Enrollments",
               icon: <GraduationCap size={20} />,
-              path: "/main/enrollments",
+              path: "/lecturer/enrollments",
             },
             {
-              name: "Academic Records",
+              name: "Grades",
               icon: <FileText size={20} />,
-              path: "/main/records",
+              path: "/lecturer/grades",
             },
             {
               name: "Change Password",
               icon: <Lock size={20} />,
-              path: "/main/changepassword",
+              path: "/lecturer/changepassword",
             },
           ].map(({ name, icon, path }) => (
             <li key={name}>
@@ -115,10 +132,7 @@ function Sidebar() {
                     ? "text-[#14ae5c] bg-black/20"
                     : "text-gray-300"
                 }`}
-                onClick={() => {
-                  setActiveNav(name.toLowerCase());
-                  navigate(path);
-                }}
+                onClick={() => handleNavClick(name, path)}
               >
                 {icon}
                 <span>{name}</span>
@@ -142,4 +156,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default LSidebar;

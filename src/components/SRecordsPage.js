@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "./SSidebar";
+import SSidebar from "./SSidebar";
 
 function SRecordsPage() {
   const [expandedTerm, setExpandedTerm] = useState("Summer / 2025");
@@ -68,7 +68,7 @@ function SRecordsPage() {
 
   return (
     <div className="flex h-screen bg-gray-900 text-white select-none">
-      <Sidebar />
+      <SSidebar />
 
       <div className="flex-1 overflow-auto">
         <div className="p-6">

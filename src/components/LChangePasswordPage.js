@@ -1,9 +1,9 @@
 // ChangePasswordPage.js
 import React, { useState } from "react";
-import Sidebar from "./SSidebar";
+import LSidebar from "./LSidebar";
 import { Eye, EyeOff } from "lucide-react";
 
-const ChangePasswordPage = () => {
+const LChangePasswordPage = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -16,7 +16,7 @@ const ChangePasswordPage = () => {
   return (
     <div className="h-screen w-full text-white flex select-none">
       <div>
-        <Sidebar />
+        <LSidebar />
       </div>
       {/* Main content */}
       <div className="flex-1">
@@ -105,4 +105,4 @@ const ChangePasswordPage = () => {
   );
 };
 
-export default ChangePasswordPage;
+export default LChangePasswordPage;
