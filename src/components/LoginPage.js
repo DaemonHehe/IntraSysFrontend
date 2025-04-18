@@ -11,6 +11,7 @@ function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Student login handler
   const ShandleLogin = async () => {
     setError("");
     setIsLoading(true);
@@ -33,6 +34,7 @@ function LoginScreen() {
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("role", "student"); // Explicitly store the role
 
         navigate("/main/dashboard");
       } else {
@@ -46,6 +48,7 @@ function LoginScreen() {
     }
   };
 
+  // Lecturer login handler
   const LhandleLogin = async () => {
     setError("");
     setIsLoading(true);
@@ -68,6 +71,7 @@ function LoginScreen() {
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("token", data.token);
         localStorage.setItem("lecturer", JSON.stringify(data.lecturer));
+        localStorage.setItem("role", "lecturer"); // Explicitly store the role
 
         navigate("/lecturer/dashboard");
       } else {
