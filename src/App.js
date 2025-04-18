@@ -5,16 +5,10 @@ import { LinkIcon } from "lucide-react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Calendar from "./components/Calendar";
 import LoginPage from "./components/LoginPage";
-<<<<<<< HEAD
-import SDashboardPage from "./components/SDashboardPage";
-import SEnrollmentsPage from "./components/SEnrollmentsPage";
-import SRecordsPage from "./components/SRecordsPage";
-=======
-import DashboardPage from "./components/DashboardPage";
-import EnrollmentsPage from "./components/EnrollmentsPage";
-import RecordsPage from "./components/RecordsPage";
+import SDashboardPage from "./components/DashboardPage";
+import SEnrollmentsPage from "./components/EnrollmentsPage";
+import SRecordsPage from "./components/RecordsPage";
 import GradesPage from "./components/Grade";
->>>>>>> a9e3bc095d163c82e8549981f7e73bc39c034cac
 import ChangePasswordPage from "./components/ChangePasswordPage"; // Importing the components for routing
 import "./App.css";
 
