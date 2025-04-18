@@ -94,6 +94,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/lecturer/grades"
+          element={
+            <ProtectedRoute>
+              <GradesPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );
