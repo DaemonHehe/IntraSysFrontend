@@ -190,7 +190,7 @@ function EnrollmentsPage() {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-[#1E472A] text-left text-sm">
-                    <th className="py-2 px-4 font-medium">ID</th>
+                    <th className="py-2 px-4 font-medium">No.</th>
                     <th className="py-2 px-4 font-medium">Course</th>
                     <th className="py-2 px-4 font-medium">Session</th>
                     <th className="py-2 px-4 font-medium">Instructor</th>
