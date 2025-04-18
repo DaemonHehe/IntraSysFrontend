@@ -1,6 +1,6 @@
 // ChangePasswordPage.js
 import React, { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./SSidebar";
 import { Eye, EyeOff } from "lucide-react";
 
 const ChangePasswordPage = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./SSidebar";
 
 function SRecordsPage() {
   const [expandedTerm, setExpandedTerm] = useState("Summer / 2025");

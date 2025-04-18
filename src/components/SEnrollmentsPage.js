@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Search, X } from "lucide-react";
 import clsx from "clsx";
-import Sidebar from "./Sidebar";
+import Sidebar from "./SSidebar";
 
 const AVAILABLE_COURSES = [
   {

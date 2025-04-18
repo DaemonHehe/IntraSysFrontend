@@ -11,6 +11,7 @@ import SRecordsPage from "./components/SRecordsPage";
 import GradesPage from "./components/Grade";
 import ChangePasswordPage from "./components/ChangePasswordPage"; // Importing the components for routing
 import "./App.css";
+import LDashboardPage from "./components/LDashboardPage";
 
 function App() {
   return (
@@ -99,6 +100,15 @@ function App() {
           element={
             <ProtectedRoute>
               <GradesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/lecturer/dashboard"
+          element={
+            <ProtectedRoute>
+              <LDashboardPage />
             </ProtectedRoute>
           }
         />

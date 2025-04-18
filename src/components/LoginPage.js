@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 function LoginScreen() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); // Default role
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
