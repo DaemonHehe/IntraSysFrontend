@@ -1,26 +1,40 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   GraduationCap,
-  FileText,
   Lock,
   LogOut,
   User,
 } from "lucide-react";
 
 function Sidebar() {
-  const [activeNav, setActiveNav] = useState("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [activeNav, setActiveNav] = useState("");
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
-  // Fetch user data
+  // 🧠 Set active nav based on current location
+  useEffect(() => {
+    const path = location.pathname.toLowerCase();
+    if (path.includes("dashboard")) setActiveNav("dashboard");
+    else if (path.includes("enrollments")) setActiveNav("enrollments");
+    else if (path.includes("changepassword")) setActiveNav("change password");
+  }, [location.pathname]);
+
+  // 📡 Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("No token found");
+        setLoading(false);
+        return;
+      }
+
       try {
-        // Get the token from local storage
-        const token = localStorage.getItem("token");
         const response = await fetch(
           "https://intrasysmiso.onrender.com/lecturers/",
           {
@@ -35,12 +49,9 @@ function Sidebar() {
         }
 
         const data = await response.json();
-
-        // check if data is an array and get the first item
         setUserData(Array.isArray(data) && data.length > 0 ? data[0] : null);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // Handle error (e.g., redirect to login page)
       } finally {
         setLoading(false);
       }
@@ -49,9 +60,11 @@ function Sidebar() {
     fetchUserData();
   }, []);
 
+  // 🔐 Handle logout
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("token");
+    setUserData(null);
     navigate("/");
   };
 
@@ -60,11 +73,6 @@ function Sidebar() {
       {/* User Profile */}
       <div className="p-4 flex items-center space-x-3 border-b border-gray-800">
         <div className="w-12 h-12 rounded-full bg-[#14ae5c] flex items-center justify-center overflow-hidden">
-          {/* <img
-            src="/placeholder.svg?height=48&width=48"
-            alt="Profile"
-            className="w-full h-full object-cover"
-          /> */}
           <User size={24} color="#fff" />
         </div>
         <div>
@@ -72,13 +80,11 @@ function Sidebar() {
             <p className="text-sm text-gray-400">Loading...</p>
           ) : userData ? (
             <>
-              <h3 className="font-medium">{userData.name || "User"}</h3>
-              <p className="text-xs text-gray-400">
-                {userData.email || "No email"}
-              </p>
+              <h3 className="font-medium">{userData.name}</h3>
+              <p className="text-xs text-gray-400">{userData.email}</p>
             </>
           ) : (
-            <p className="text-sm text-gray-400">Failed to load user data</p>
+            <p className="text-sm text-gray-400">No user found</p>
           )}
         </div>
       </div>
@@ -90,41 +96,39 @@ function Sidebar() {
             {
               name: "Dashboard",
               icon: <LayoutDashboard size={20} />,
-              path: "/main/dashboard",
+              path: "/lecturer/dashboard",
             },
             {
               name: "Enrollments",
               icon: <GraduationCap size={20} />,
-              path: "/main/enrollments",
-            },
-            {
-              name: "Academic Records",
-              icon: <FileText size={20} />,
-              path: "/main/records",
+              path: "/lecturer/enrollments",
             },
             {
               name: "Change Password",
               icon: <Lock size={20} />,
-              path: "/main/changepassword",
+              path: "/lecturer/changepassword",
             },
-          ].map(({ name, icon, path }) => (
-            <li key={name}>
-              <button
-                className={`w-full flex items-center space-x-3 px-6 py-3 ${
-                  activeNav === name.toLowerCase()
-                    ? "text-[#14ae5c] bg-black/20"
-                    : "text-gray-300"
-                }`}
-                onClick={() => {
-                  setActiveNav(name.toLowerCase());
-                  navigate(path);
-                }}
-              >
-                {icon}
-                <span>{name}</span>
-              </button>
-            </li>
-          ))}
+          ].map(({ name, icon, path }) => {
+            const isActive = activeNav === name.toLowerCase();
+            return (
+              <li key={name}>
+                <button
+                  className={`w-full flex items-center space-x-3 px-6 py-3 ${
+                    isActive
+                      ? "text-[#14ae5c] bg-black/20"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                  onClick={() => {
+                    setActiveNav(name.toLowerCase());
+                    navigate(path);
+                  }}
+                >
+                  {icon}
+                  <span>{name}</span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 

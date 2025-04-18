@@ -12,6 +12,7 @@ import GradesPage from "./components/Grade";
 import ChangePasswordPage from "./components/ChangePasswordPage"; // Importing the components for routing
 import "./App.css";
 import LDashboardPage from "./components/LDashboardPage";
+import CoursesPage from "./components/CoursesPage";
 
 function App() {
   return (
@@ -109,6 +110,14 @@ function App() {
           element={
             <ProtectedRoute>
               <LDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lecturer/courses"
+          element={
+            <ProtectedRoute>
+              <CoursesPage />
             </ProtectedRoute>
           }
         />
