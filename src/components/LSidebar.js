@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   GraduationCap,
-  FileText,
   Lock,
   LogOut,
   User,
@@ -27,9 +26,14 @@ function LSidebar() {
   // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("No token found");
+        setLoading(false);
+        return;
+      }
+
       try {
-        // Get the token from local storage
-        const token = localStorage.getItem("token");
         const response = await fetch(
           "https://intrasysmiso.onrender.com/lecturers/",
           {
@@ -44,12 +48,9 @@ function LSidebar() {
         }
 
         const data = await response.json();
-
-        // check if data is an array and get the first item
         setUserData(Array.isArray(data) && data.length > 0 ? data[0] : null);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // Handle error (e.g., redirect to login page)
       } finally {
         setLoading(false);
       }
@@ -58,6 +59,7 @@ function LSidebar() {
     fetchUserData();
   }, []);
 
+  // 🔐 Handle logout
   const handleLogout = () => {
     // Clear all authentication-related data
     localStorage.removeItem("isAuthenticated");
@@ -89,13 +91,11 @@ function LSidebar() {
             <p className="text-sm text-gray-400">Loading...</p>
           ) : userData ? (
             <>
-              <h3 className="font-medium">{userData.name || "User"}</h3>
-              <p className="text-xs text-gray-400">
-                {userData.email || "No email"}
-              </p>
+              <h3 className="font-medium">{userData.name}</h3>
+              <p className="text-xs text-gray-400">{userData.email}</p>
             </>
           ) : (
-            <p className="text-sm text-gray-400">Failed to load user data</p>
+            <p className="text-sm text-gray-400">No user found</p>
           )}
         </div>
       </div>
@@ -107,6 +107,7 @@ function LSidebar() {
             {
               name: "Dashboard",
               icon: <LayoutDashboard size={20} />,
+              path: "/lecturer/dashboard",
               path: "/lecturer/dashboard",
             },
             {
@@ -122,6 +123,7 @@ function LSidebar() {
             {
               name: "Change Password",
               icon: <Lock size={20} />,
+              path: "/lecturer/changepassword",
               path: "/lecturer/changepassword",
             },
           ].map(({ name, icon, path }) => (
