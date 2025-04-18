@@ -12,6 +12,7 @@ import GradingPage from "./components/Grade.js";
 import SChangePasswordPage from "./components/SChangePasswordPage.js";
 import LDashboardPage from "./components/LDashboardPage";
 import LChangePasswordPage from "./components/LChangePasswordPage.js";
+import CoursesPage from "./components/CoursesPage.js";
 import "./App.css";
 
 function App() {
@@ -120,6 +121,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="lecturer">
               <LChangePasswordPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lecturer/courses"
+          element={
+            <ProtectedRoute requiredRole="lecturer">
+              <CoursesPage />
             </ProtectedRoute>
           }
         />
