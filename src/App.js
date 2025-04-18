@@ -8,11 +8,13 @@ import LoginPage from "./components/LoginPage";
 import SDashboardPage from "./components/SDashboardPage";
 import SEnrollmentsPage from "./components/SEnrollmentsPage";
 import SRecordsPage from "./components/SRecordsPage";
-import GradingPage from "./components/Grade.js";
+import LGrade from "./components/LGrade.js";
 import SChangePasswordPage from "./components/SChangePasswordPage.js";
 import LDashboardPage from "./components/LDashboardPage";
 import LChangePasswordPage from "./components/LChangePasswordPage.js";
+import CoursesPage from "./components/CoursesPage.js";
 import "./App.css";
+
 
 function App() {
   return (
@@ -102,9 +104,9 @@ function App() {
           path="/lecturer/grades"
           element={
             <ProtectedRoute requiredRole="lecturer">
-              <GradingPage />
+              <LGrade />
             </ProtectedRoute>
-          }
+          }   
         />
 
         <Route
@@ -120,6 +122,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="lecturer">
               <LChangePasswordPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lecturer/courses"
+          element={
+            <ProtectedRoute requiredRole="lecturer">
+              <CoursesPage />
             </ProtectedRoute>
           }
         />

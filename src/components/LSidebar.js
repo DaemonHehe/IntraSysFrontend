@@ -111,9 +111,9 @@ function LSidebar() {
               path: "/lecturer/dashboard",
             },
             {
-              name: "Enrollments",
+              name: "Courses",
               icon: <GraduationCap size={20} />,
-              path: "/lecturer/enrollments",
+              path: "/lecturer/courses",
             },
             {
               name: "Grades",
