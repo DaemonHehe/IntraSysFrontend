@@ -6,13 +6,12 @@ import { useNavigate } from "react-router-dom";
 
 function LoginScreen() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student"); // Default role
+  const [password, setPassword] = useState(""); // Default role
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const ShandleLogin = async () => {
     setError("");
     setIsLoading(true);
 
@@ -24,7 +23,7 @@ function LoginScreen() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password, role }), // include role
+          body: JSON.stringify({ email, password }),
         }
       );
 
@@ -35,16 +34,42 @@ function LoginScreen() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        // Use API response or selected role
-        const userRole = data.user?.role || role;
+        navigate("/main/dashboard");
+      } else {
+        setError(data.message || "Invalid email or password");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Failed to connect to the server");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        if (userRole === "student") {
-          navigate("/main/dashboard");
-        } else if (userRole === "lecturer") {
-          navigate("/lecturer/dashboard");
-        } else {
-          setError("Unknown user role");
+  const LhandleLogin = async () => {
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        "https://intrasysmiso.onrender.com/lecturers/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
         }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("lecturer", JSON.stringify(data.lecturer));
+
+        navigate("/lecturer/dashboard");
       } else {
         setError(data.message || "Invalid email or password");
       }
@@ -102,21 +127,6 @@ function LoginScreen() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="role" className="text-black">
-                I am a...
-              </label>
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-[#3c4c3c] text-white rounded-lg p-3 focus:outline-none"
-              >
-                <option value="student">Student</option>
-                <option value="lecturer">Lecturer</option>
-              </select>
-            </div>
-
             {error && (
               <div className="text-red-600 text-center font-medium">
                 {error}
@@ -126,10 +136,20 @@ function LoginScreen() {
             <div className="pt-4 flex justify-center">
               <button
                 className="bg-[#14AE5C] text-black px-8 py-2 rounded-full hover:bg-[#7aab8e] transition-colors disabled:opacity-50"
-                onClick={handleLogin}
+                onClick={ShandleLogin}
                 disabled={isLoading || !email || !password}
               >
-                {isLoading ? "Logging in..." : "Log in"}
+                {isLoading ? "Logging in..." : "Log in as Student"}
+              </button>
+            </div>
+
+            <div className="pt-4 flex justify-center">
+              <button
+                className="bg-[#14AE5C] text-black px-8 py-2 rounded-full hover:bg-[#7aab8e] transition-colors disabled:opacity-50"
+                onClick={LhandleLogin}
+                disabled={isLoading || !email || !password}
+              >
+                {isLoading ? "Logging in..." : "Log in as Lecturer"}
               </button>
             </div>
           </div>
