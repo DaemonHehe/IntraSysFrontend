@@ -36,7 +36,7 @@ function GradingPage() {
         studentId: grade.student._id,
         courseCode: grade.course.code,
         courseName: grade.course.name,
-        grade: grade.grade,
+        grade: grade.grade || "N/A",
         status: grade.status,
         remarks: grade.remarks,
       }));
@@ -347,7 +347,7 @@ function GradingPage() {
                           className={clsx(
                             student.grade === "F"
                               ? "text-red-400"
-                              : student.grade.startsWith("A")
+                              : student.grade?.startsWith("A")
                               ? "text-green-400"
                               : "text-white"
                           )}
