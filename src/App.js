@@ -8,6 +8,7 @@ import LoginPage from "./components/LoginPage";
 import DashboardPage from "./components/DashboardPage";
 import EnrollmentsPage from "./components/EnrollmentsPage";
 import RecordsPage from "./components/RecordsPage";
+import GradesPage from "./components/Grade";
 import ChangePasswordPage from "./components/ChangePasswordPage"; // Importing the components for routing
 import "./App.css";
 
