@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 
-function RecordsPage() {
+function SRecordsPage() {
   const [expandedTerm, setExpandedTerm] = useState("Summer / 2025");
 
   const terms = [
@@ -135,4 +135,4 @@ function RecordsPage() {
   );
 }
 
-export default RecordsPage;
+export default SRecordsPage;

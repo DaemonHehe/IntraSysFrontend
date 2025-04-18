@@ -2,7 +2,7 @@
 
 import Sidebar from "./Sidebar"; // Importing the Sidebar component
 import { ChevronLeft, ChevronRight } from "lucide-react"; // Importing icons from lucide-react
-function DashboardPage() {
+function SDashboardPage() {
   return (
     <div className="min-h-screen bg-black text-white flex select-none">
       <Sidebar /> {/* Sidebar component for navigation */}
@@ -353,4 +353,4 @@ function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default SDashboardPage;

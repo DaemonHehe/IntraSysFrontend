@@ -57,7 +57,7 @@ const AVAILABLE_COURSES = [
   },
 ];
 
-function EnrollmentsPage() {
+function SEnrollmentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -425,4 +425,4 @@ function EnrollmentsPage() {
   );
 }
 
-export default EnrollmentsPage;
+export default SEnrollmentsPage;
