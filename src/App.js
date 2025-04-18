@@ -5,9 +5,9 @@ import { LinkIcon } from "lucide-react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Calendar from "./components/Calendar";
 import LoginPage from "./components/LoginPage";
-import SDashboardPage from "./components/DashboardPage";
-import SEnrollmentsPage from "./components/EnrollmentsPage";
-import SRecordsPage from "./components/RecordsPage";
+import SDashboardPage from "./components/SDashboardPage";
+import SEnrollmentsPage from "./components/SEnrollmentsPage";
+import SRecordsPage from "./components/SRecordsPage";
 import GradesPage from "./components/Grade";
 import ChangePasswordPage from "./components/ChangePasswordPage"; // Importing the components for routing
 import "./App.css";
