@@ -11,9 +11,10 @@ function LGrade() {
   const [editingId, setEditingId] = useState(null);
   const [currentGrade, setCurrentGrade] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [students, setStudents] = useState([]);
 
   const [newGrade, setNewGrade] = useState({
-    studentName: "",
+    studentId: "",
     courseId: "",
     status: "",
     remarks: "",
@@ -28,24 +29,29 @@ function LGrade() {
       try {
         const token = localStorage.getItem("token");
 
-        const [gradesRes, coursesRes] = await Promise.all([
+        const [gradesRes, coursesRes, studentsRes] = await Promise.all([
           fetch("https://intrasysmiso.onrender.com/grades", {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("https://intrasysmiso.onrender.com/courses", {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          fetch("https://intrasysmiso.onrender.com/users", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
 
-        if (!gradesRes.ok || !coursesRes.ok) {
+        if (!gradesRes.ok || !coursesRes.ok || !studentsRes.ok) {
           throw new Error("Failed to fetch data");
         }
 
         const gradesData = await gradesRes.json();
         const coursesData = await coursesRes.json();
+        const studentsData = await studentsRes.json();
 
         setGrades(gradesData);
         setCourses(coursesData.data);
+        setStudents(studentsData);
       } catch (err) {
         console.error(err);
         setError("Failed to load data. Try again later.");
@@ -56,6 +62,8 @@ function LGrade() {
 
     fetchData();
   }, []);
+
+  console.log("Students:", students);
 
   const handleEdit = (grade) => {
     setEditingId(grade._id);
@@ -103,7 +111,7 @@ function LGrade() {
   };
 
   const handleAddGrade = async () => {
-    if (!newGrade.studentName || !newGrade.courseId || !newGrade.status) {
+    if (!newGrade.studentId || !newGrade.courseId || !newGrade.status) {
       setSubmitStatus({ message: "Fill all required fields.", type: "error" });
       return;
     }
@@ -118,7 +126,12 @@ function LGrade() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(newGrade),
+          body: JSON.stringify({
+            student: newGrade.studentId,
+            course: newGrade.courseId,
+            status: newGrade.status,
+            remarks: newGrade.remarks,
+          }),
         }
       );
 
@@ -158,7 +171,7 @@ function LGrade() {
               <PlusCircle size={20} /> Add Grade
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
+              {/* <input
                 type="text"
                 placeholder="Student Name"
                 className="bg-[#222] border border-gray-700 rounded px-3 py-2 w-full"
@@ -166,7 +179,21 @@ function LGrade() {
                 onChange={(e) =>
                   setNewGrade({ ...newGrade, studentName: e.target.value })
                 }
-              />
+              /> */}
+              <select
+                value={newGrade.studentId}
+                onChange={(e) =>
+                  setNewGrade({ ...newGrade, studentId: e.target.value })
+                }
+                className="bg-[#222] border border-gray-700 rounded px-3 py-2 w-full"
+              >
+                <option value="">Select Student</option>
+                {students.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
               <select
                 value={newGrade.courseId}
                 onChange={(e) =>
