@@ -1,8 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SSidebar from "./SSidebar";
+import axios from "axios";
 
 function SRecordsPage() {
   const [expandedTerm, setExpandedTerm] = useState("Summer / 2025");
+  const [grades, setGrades] = useState([]);
+
+  useEffect(() => {
+    const fetchGrades = async () => {
+      try {
+        const res = await axios.get("https://intrasysmiso.onrender.com/grades");
+        const johnsGrades = res.data.filter(
+          (g) => g.student?.email === "john@gmail.com" && g.course !== null
+        );
+        setGrades(johnsGrades);
+      } catch (err) {
+        console.error("Failed to fetch grades", err);
+      }
+    };
+
+    fetchGrades();
+  }, []);
 
   const terms = [
     {
@@ -30,7 +48,7 @@ function SRecordsPage() {
           code: "CSC460",
           name: "SOFTWARE ENGINEERING",
           credit: 3,
-          grade: "C+",
+          grade: "C",
         },
         { code: "CSC455", name: "COMPUTER NETWORKS", credit: 3, grade: "C" },
       ],
@@ -44,19 +62,7 @@ function SRecordsPage() {
           code: "CSC490",
           name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
           credit: 3,
-          grade: "B-",
-        },
-        {
-          code: "CSC490",
-          name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-          credit: 3,
-          grade: "B+",
-        },
-        {
-          code: "CSC490",
-          name: "INFORMATION SYSTEM ANALYSIS AND DESIGN",
-          credit: 3,
-          grade: "C",
+          grade: "B",
         },
       ],
     },
@@ -120,6 +126,19 @@ function SRecordsPage() {
                             </td>
                             <td className="p-2 text-center">{course.credit}</td>
                             <td className="p-2 text-center">{course.grade}</td>
+                          </tr>
+                        ))}
+                        {/* 🔽 Add real data from API */}
+                        {grades.map((g, idx) => (
+                          <tr
+                            key={`real-${idx}`}
+                            className="border-t border-gray-600"
+                          >
+                            <td className="p-2">
+                              {g.course.name} ({g.course.category})
+                            </td>
+                            <td className="p-2 text-center">-</td>
+                            <td className="p-2 text-center">{g.status}</td>
                           </tr>
                         ))}
                       </tbody>
