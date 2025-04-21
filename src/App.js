@@ -15,7 +15,6 @@ import LChangePasswordPage from "./components/LChangePasswordPage.js";
 import CoursesPage from "./components/CoursesPage.js";
 import "./App.css";
 
-
 function App() {
   return (
     <Router>
@@ -106,7 +105,7 @@ function App() {
             <ProtectedRoute requiredRole="lecturer">
               <LGrade />
             </ProtectedRoute>
-          }   
+          }
         />
 
         <Route
